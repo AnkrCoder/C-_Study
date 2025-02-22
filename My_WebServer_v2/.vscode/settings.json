@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "server": "cpp",
+        "system_error": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}
