@@ -1,3 +1,3 @@
 # C-_Study
-Study C++!
+C++ Study!
 
