@@ -1,25 +1,50 @@
-#include <boost/beast/core.hpp>
-#include <boost/beast/http.hpp>
-#include <boost/beast/version.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/strand.hpp>
-#include <boost/config.hpp>
-#include <memory>
-#include <string>
-#include <vector>
+#ifndef HTTP_CONNECTION_H
+#define HTTP_CONNECTION_H
 
-class HttpConnection : public std::enable_shared_from_this<HttpConnection> {
+#pragma once
+#include "../Epoll_Reactor/Epoll_Reactor.h"
+#include <string>
+#include <map>
+#include <functional>
+
+class TcpConnection;
+
+class HTTPConnection
+{
 public:
-    HttpConnection(boost::asio::ip::tcp::socket socket);
-    void start();
+    explicit HTTPConnection(TcpConnection &conn, std::string root_dir);
+    void handle_input(std::string &input_buffer);
 
 private:
-    void do_read();
-    void handle_request(boost::beast::http::request<boost::beast::http::string_body>&& req);
-    void send_response(boost::beast::http::response<boost::beast::http::string_body>&& res);
+    void handle_get();
+    void handle_head();
+    void handle_post();
+    void handle_not_implemented();
 
-    boost::asio::ip::tcp::socket socket_;
-    boost::beast::flat_buffer buffer_;
-    boost::beast::http::request<boost::beast::http::string_body> req_;
-    boost::beast::http::response<boost::beast::http::string_body> res_;
+    bool parse_request(const std::string &buffer);
+    void prepare_response();
+    void send_response(int status, const std::string &content);
+    std::string get_mime_type(const std::string &path) const;
+    bool read_file_content(const std::string &path, std::string &content) const;
+
+    TcpConnection &conn_;
+
+    std::string method_;
+    std::string uri_;
+    std::string version_;
+    std::map<std::string, std::string> headers_;
+
+    bool keep_alive_ = false;
+    const std::string root_dir_;
+
+    // 新增状态码常量
+    static constexpr int HTTP_OK = 200;
+    static constexpr int HTTP_BAD_REQUEST = 400;
+    static constexpr int HTTP_FORBIDDEN = 403;
+    static constexpr int HTTP_NOT_FOUND = 404;
+    static constexpr int HTTP_METHOD_NOT_ALLOWED = 405;
+    static constexpr int HTTP_INTERNAL_ERROR = 500;
+    static constexpr int HTTP_NOT_IMPLEMENTED = 501;
 };
+
+#endif

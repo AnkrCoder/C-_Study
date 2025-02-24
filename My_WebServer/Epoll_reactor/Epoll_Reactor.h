@@ -1,3 +1,6 @@
+#ifndef EPOLL_REACTOR_H
+#define EPOLL_REACTOR_H
+
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -11,17 +14,16 @@
 #include <iostream>
 #include <vector>
 
-// Epoll Reactor class
-class EpollReactor {
+class EpollReactor
+{
 public:
     using EventCallback = std::function<void(uint32_t events)>;
 
     EpollReactor();
     ~EpollReactor();
 
-    // Disable copy
-    EpollReactor(const EpollReactor&) = delete;
-    EpollReactor& operator=(const EpollReactor&) = delete;
+    EpollReactor(const EpollReactor &) = delete;
+    EpollReactor &operator=(const EpollReactor &) = delete;
 
     void add_fd(int fd, uint32_t events, EventCallback cb);
     void modify_fd(int fd, uint32_t events);
@@ -29,54 +31,54 @@ public:
     void run(int max_events = 64, int timeout_ms = -1);
 
 private:
+    std::unordered_map<int, EventCallback> callbacks_;
     int epoll_fd_ = -1;
 };
 
-// TCP Connection class
-class TcpConnection : public std::enable_shared_from_this<TcpConnection> {
+class TcpConnection : public std::enable_shared_from_this<TcpConnection>
+{
 public:
-    using ReadCallback = std::function<void(const std::string&)>;
+    using ReadCallback = std::function<void(std::string &)>;
 
-    static std::shared_ptr<TcpConnection> create(int fd, EpollReactor& reactor);
-
+    static std::shared_ptr<TcpConnection> create(int fd, EpollReactor &reactor);
     ~TcpConnection();
 
-    // Disable copy
-    TcpConnection(const TcpConnection&) = delete;
-    TcpConnection& operator=(const TcpConnection&) = delete;
+    TcpConnection(const TcpConnection &) = delete;
+    TcpConnection &operator=(const TcpConnection &) = delete;
 
     void start();
     void set_read_callback(ReadCallback cb);
-    void send(const std::string& data);
+    void send(const std::string &data);
+    void handle_close();
+    void set_keep_alive(bool keep_alive);
 
 private:
-    TcpConnection(int fd, EpollReactor& reactor);
+    TcpConnection(int fd, EpollReactor &reactor);
 
     void handle_event(uint32_t events);
     void do_read();
     void do_write();
-    void handle_close();
     static void set_nonblocking(int fd);
 
     int fd_ = -1;
-    EpollReactor& reactor_;
+    EpollReactor &reactor_;
     std::string input_buffer_;
     std::string output_buffer_;
     bool writing_ = false;
+    bool keep_alive_ = false;
     ReadCallback read_cb_;
 };
 
-// TCP Acceptor class
-class TcpAcceptor {
+class TcpAcceptor
+{
 public:
     using NewConnectionCallback = std::function<void(int fd)>;
 
-    TcpAcceptor(EpollReactor& reactor, uint16_t port);
+    TcpAcceptor(EpollReactor &reactor, uint16_t port);
     ~TcpAcceptor();
 
-    // Disable copy
-    TcpAcceptor(const TcpAcceptor&) = delete;
-    TcpAcceptor& operator=(const TcpAcceptor&) = delete;
+    TcpAcceptor(const TcpAcceptor &) = delete;
+    TcpAcceptor &operator=(const TcpAcceptor &) = delete;
 
     void set_new_connection_callback(NewConnectionCallback cb);
 
@@ -84,6 +86,8 @@ private:
     void handle_accept();
 
     int listen_fd_ = -1;
-    EpollReactor& reactor_;
+    EpollReactor &reactor_;
     NewConnectionCallback new_conn_cb_;
 };
+
+#endif
