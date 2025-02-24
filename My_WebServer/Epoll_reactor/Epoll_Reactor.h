@@ -52,6 +52,8 @@ public:
     void handle_close();
     void set_keep_alive(bool keep_alive);
 
+    int fd() const { return fd_; }
+
 private:
     TcpConnection(int fd, EpollReactor &reactor);
 

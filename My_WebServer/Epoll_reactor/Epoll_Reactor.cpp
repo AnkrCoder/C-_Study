@@ -1,4 +1,5 @@
 #include "Epoll_Reactor.h"
+#include "../Logger/Logger.h"
 
 EpollReactor::EpollReactor()
 {
@@ -7,6 +8,8 @@ EpollReactor::EpollReactor()
     {
         throw std::system_error(errno, std::generic_category(), "epoll_create1");
     }
+    Logger::get_instance().log(Logger::INFO,
+                               "Epoll instance created (fd=" + std::to_string(epoll_fd_) + ")");
 }
 
 EpollReactor::~EpollReactor()
@@ -28,6 +31,7 @@ void EpollReactor::add_fd(int fd, uint32_t events, EventCallback cb)
 
     if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, fd, &ev) == -1)
     {
+        Logger::get_instance().log(Logger::ERROR, "epoll_ctl add failed for fd=" + std::to_string(fd) + ": " + std::to_string(errno));
         throw std::system_error(errno, std::generic_category(), "epoll_ctl add");
     }
 }
@@ -36,8 +40,9 @@ void EpollReactor::modify_fd(int fd, uint32_t events)
 {
     if (fd < 0 || epoll_fd_ < 0)
     {
-        std::cerr << "WARN: Attempt to modify invalid fd=" << fd
-                  << " (epoll_fd=" << epoll_fd_ << ")\n";
+        Logger::get_instance().log(Logger::WARNING,
+                                   "Attempt to modify invalid fd=" + std::to_string(fd) +
+                                       " (epoll_fd= " + std::to_string(epoll_fd_) + ")");
         return;
     }
 
@@ -288,6 +293,8 @@ void TcpAcceptor::handle_accept()
         {
             if (errno == EAGAIN || errno == EWOULDBLOCK)
                 break;
+            Logger::get_instance().log(Logger::ERROR,
+                                       "Accept error: " + errno);
             throw std::system_error(errno, std::generic_category(), "accept4");
         }
 

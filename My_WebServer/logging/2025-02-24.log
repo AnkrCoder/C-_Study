@@ -1,0 +1,59 @@
+[2025-02-24 15:12:30] [SYSTEM] Log file created
+[2025-02-24 15:12:31] [INFO] Server started successfully
+[2025-02-24 15:12:31] [INFO] Epoll instance created (fd=4)
+[2025-02-24 15:12:37] [INFO] GET / (fd=6)
+[2025-02-24 15:12:37] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:12:37] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:12:37] [INFO] GET /favicon.ico (fd=6)
+[2025-02-24 15:12:37] [INFO] Response 404 for /favicon.ico
+[2025-02-24 15:13:03] [INFO] GET / (fd=6)
+[2025-02-24 15:13:03] [INFO] GET /favicon.ico (fd=6)
+[2025-02-24 15:13:03] [INFO] Response 404 for /favicon.ico
+[2025-02-24 15:13:05] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:13:09] [INFO] GET / (fd=6)
+[2025-02-24 15:13:11] [INFO] GET / (fd=6)
+[2025-02-24 15:13:11] [INFO] GET / (fd=6)
+[2025-02-24 15:13:11] [INFO] GET / (fd=6)
+[2025-02-24 15:13:11] [INFO] GET / (fd=6)
+[2025-02-24 15:13:12] [INFO] GET / (fd=6)
+[2025-02-24 15:13:12] [INFO] GET / (fd=6)
+[2025-02-24 15:13:12] [INFO] GET / (fd=6)
+[2025-02-24 15:13:13] [INFO] GET / (fd=6)
+[2025-02-24 15:13:13] [INFO] GET / (fd=6)
+[2025-02-24 15:13:13] [INFO] GET / (fd=6)
+[2025-02-24 15:13:13] [INFO] GET / (fd=6)
+[2025-02-24 15:13:14] [INFO] GET / (fd=6)
+[2025-02-24 15:13:14] [INFO] GET / (fd=6)
+[2025-02-24 15:13:14] [INFO] GET / (fd=6)
+[2025-02-24 15:13:15] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:13:15] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:13:55] [INFO] GET / (fd=6)
+[2025-02-24 15:13:55] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:14:09] [INFO] GET / (fd=6)
+[2025-02-24 15:14:09] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:14:10] [INFO] GET /favicon.ico (fd=6)
+[2025-02-24 15:14:10] [INFO] Response 404 for /favicon.ico
+[2025-02-24 15:14:12] [INFO] GET / (fd=6)
+[2025-02-24 15:14:12] [INFO] GET / (fd=6)
+[2025-02-24 15:14:12] [INFO] GET / (fd=6)
+[2025-02-24 15:14:12] [INFO] GET / (fd=6)
+[2025-02-24 15:14:12] [INFO] GET / (fd=6)
+[2025-02-24 15:14:12] [INFO] GET / (fd=6)
+[2025-02-24 15:14:13] [INFO] GET / (fd=6)
+[2025-02-24 15:14:13] [INFO] GET / (fd=6)
+[2025-02-24 15:14:13] [INFO] GET / (fd=6)
+[2025-02-24 15:14:14] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:14:14] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:14:39] [INFO] POST / (fd=6)
+[2025-02-24 15:14:39] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:14:56] [INFO] GET / (fd=6)
+[2025-02-24 15:14:56] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:14:57] [INFO] GET /favicon.ico (fd=6)
+[2025-02-24 15:14:57] [INFO] Response 404 for /favicon.ico
+[2025-02-24 15:14:58] [INFO] GET / (fd=6)
+[2025-02-24 15:14:59] [INFO] GET / (fd=6)
+[2025-02-24 15:14:59] [INFO] GET / (fd=6)
+[2025-02-24 15:14:59] [INFO] GET / (fd=6)
+[2025-02-24 15:14:59] [INFO] GET / (fd=6)
+[2025-02-24 15:15:00] [WARNING] Incomplete request headers from fd=-1
+[2025-02-24 15:15:00] [WARNING] Incomplete request headers from fd=-1

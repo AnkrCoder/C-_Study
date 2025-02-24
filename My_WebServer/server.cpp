@@ -1,10 +1,14 @@
 #include "HTTP_Connection/HTTP_Connection.h"
+#include "Logger/Logger.h"
 #include <iostream>
 
 int main()
 {
     try
     {
+        Logger::get_instance().init("logging", 1000);
+        Logger::get_instance().log(Logger::INFO, "Server started successfully"); // test
+
         EpollReactor reactor;
         TcpAcceptor acceptor(reactor, 8080);
 
@@ -23,6 +27,7 @@ int main()
     }
     catch (const std::exception &e)
     {
+        Logger::get_instance().log(Logger::ERROR, e.what());
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }

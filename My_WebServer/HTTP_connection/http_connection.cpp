@@ -1,4 +1,5 @@
 #include "HTTP_Connection.h"
+#include "../Logger/Logger.h"
 #include <sstream>
 #include <fstream>
 #include <algorithm>
@@ -12,12 +13,16 @@ void HTTPConnection::handle_input(std::string &input_buffer)
 {
     size_t header_end = input_buffer.find("\r\n\r\n");
     if (header_end == std::string::npos)
+    {
+        Logger::get_instance().log(Logger::WARNING,
+                                   "Incomplete request headers from fd=" + std::to_string(conn_.fd()));
         return;
-
-    // std::cout << "HTTP Request: " << input_buffer.substr(0, header_end + 4) << std::endl;
+    }
 
     if (!parse_request(input_buffer.substr(0, header_end + 4)))
     {
+        Logger::get_instance().log(Logger::ERROR,
+                                   "Parse failed: " + input_buffer.substr(0, std::min(100ul, input_buffer.size())));
         send_response(HTTP_BAD_REQUEST, "<h1>400 Bad Request</h1>");
         // conn_.handle_close();    //潜在错误根源（核心转储）
         return;
@@ -64,16 +69,18 @@ bool HTTPConnection::parse_request(const std::string &headers)
         keep_alive_ = (headers_["Connection"] == "keep-alive");
     }
 
-    // std::cout << "parse_request keep_alive_:" << keep_alive_ << std::endl;
-
     conn_.set_keep_alive(keep_alive_);
     return true;
 }
 
 void HTTPConnection::prepare_response()
 {
+    Logger::get_instance().log(Logger::INFO,
+                               method_ + " " + uri_ + " (fd=" + std::to_string(conn_.fd()) + ")");
+
     if (uri_.find("..") != std::string::npos)
     {
+        Logger::get_instance().log(Logger::WARNING, "Forbidden path: " + uri_);
         send_response(HTTP_FORBIDDEN, "<h1>403 Forbidden</h1>");
         return;
     }
@@ -107,10 +114,6 @@ void HTTPConnection::prepare_response()
 // GET方法实现
 void HTTPConnection::handle_get()
 {
-    // std::cout << "handle_get started:" << std::endl;
-    // std::string full_path = root_dir_ + (uri_ == "/" ? "/index.html" : uri_);
-
-    // 处理默认文件
     std::filesystem::path uri_path = (uri_ == "/") ? "/index.html" : uri_;
     std::filesystem::path full_path = std::filesystem::weakly_canonical(root_dir_ / uri_path.relative_path());
 
@@ -138,9 +141,6 @@ void HTTPConnection::handle_head()
 {
     // std::cout << "handle_head started:" << std::endl;
 
-    // std::string full_path = root_dir_ + (uri_ == "/" ? "/index.html" : uri_);
-
-    // 处理默认文件
     std::filesystem::path uri_path = (uri_ == "/") ? "/index.html" : uri_;
     std::filesystem::path full_path = std::filesystem::weakly_canonical(root_dir_ / uri_path.relative_path());
 
@@ -158,7 +158,7 @@ void HTTPConnection::handle_head()
     conn_.send(headers); // 仅发送头部
 }
 
-// POST方法占位实现
+// POST方法实现
 void HTTPConnection::handle_post()
 {
     // std::cout << "handle_post started:" << std::endl;
@@ -167,7 +167,6 @@ void HTTPConnection::handle_post()
     std::string headers = "HTTP/1.1 200 OK\r\n";
     headers += "Content-Type: text/html\r\n";
     headers += "Content-Length: " + std::to_string(response_body.size()) + "\r\n";
-    // headers += "Connection: close\r\n\r\n";
     headers += "Connection: " + std::string(keep_alive_ ? "keep-alive" : "close") + "\r\n\r\n";
 
     // std::cout << "handle_post keep_alive_:" << keep_alive_ << std::endl;
@@ -183,7 +182,8 @@ void HTTPConnection::handle_not_implemented()
 
 void HTTPConnection::send_response(int status, const std::string &content)
 {
-    // 这里是不是也有错误？为什么能使用 INT 来表示 HTTP_OK？
+    Logger::get_instance().log(Logger::INFO, "Response " + std::to_string(status) + " for " + uri_);
+
     std::map<int, std::string> status_text = {
         {HTTP_OK, "OK"},
         {HTTP_BAD_REQUEST, "Bad Request"},
@@ -205,7 +205,7 @@ void HTTPConnection::send_response(int status, const std::string &content)
 
     conn_.set_keep_alive(keep_alive_);
     conn_.send(headers + content);
-    
+
     // conn_.handle_close();    //潜在错误根源（核心转储）
 }
 
