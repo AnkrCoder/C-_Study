@@ -16,26 +16,27 @@ public:
     void handle_input(std::string &input_buffer);
 
 private:
-    void handle_get();
-    void handle_head();
-    void handle_post();
-    void handle_not_implemented();
+    void handle_get();             // 处理 GET 请求
+    void handle_head();            // 处理 HEAD 请求
+    void handle_post();            // 处理 POST 请求
+    void handle_not_implemented(); // 处理未实现的请求
 
-    bool parse_request(const std::string &buffer);
-    void prepare_response();
-    void send_response(int status, const std::string &content);
-    std::string get_mime_type(const std::string &path) const;
+    bool parse_request(const std::string &buffer);              // 解析请求
+    void prepare_response();                                    // 准备响应
+    void send_response(int status, const std::string &content); // 发送错误响应
+
+    std::string get_mime_type(const std::string &path) const; // 获取文件类型
     bool read_file_content(const std::string &path, std::string &content) const;
 
-    TcpConnection &conn_;
+    TcpConnection &conn_; // TCP 连接
 
     std::string method_;
     std::string uri_;
     std::string version_;
     std::map<std::string, std::string> headers_;
 
-    bool keep_alive_ = false;
-    const std::string root_dir_;
+    bool keep_alive_ = false;    // 长连接标识
+    const std::string root_dir_; // 静态文件根目录
 
     static constexpr int HTTP_OK = 200;
     static constexpr int HTTP_BAD_REQUEST = 400;

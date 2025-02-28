@@ -24,7 +24,7 @@ void HTTPConnection::handle_input(std::string &input_buffer)
         Logger::get_instance().log(Logger::ERROR,
                                    "Parse failed: " + input_buffer.substr(0, std::min(100ul, input_buffer.size())));
         send_response(HTTP_BAD_REQUEST, "<h1>400 Bad Request</h1>");
-        // conn_.handle_close();    //潜在错误根源（核心转储）
+        // conn_.handle_close();    //潜在错误?（核心转储）
         return;
     }
 

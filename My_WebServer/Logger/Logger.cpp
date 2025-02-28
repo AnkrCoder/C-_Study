@@ -1,4 +1,3 @@
-// Logger.cpp
 #include "Logger.h"
 #include <iomanip>
 #include <stdexcept>
@@ -49,10 +48,6 @@ void Logger::log(LogLevel level, const std::string &message)
     if (!log_file_.is_open())
         return;
 
-    // 获取当前时间
-    time_t now = time(nullptr);
-    tm *local_time = localtime(&now);
-
     // 格式化日志级别字符串
     const char *level_str = "";
     switch (level)
@@ -73,7 +68,7 @@ void Logger::log(LogLevel level, const std::string &message)
               << "[" << level_str << "] "
               << message << "\n";
 
-    log_file_.flush();
+    log_file_.flush();  // 刷新缓冲区
     if (log_file_.fail())
     {
         std::cerr << "Write to log file failed!" << std::endl;
@@ -135,6 +130,7 @@ void Logger::rotate_file()
     }
 
     log_file_ << "[" << get_time_string("%Y-%m-%d %H:%M:%S") << "] [SYSTEM] Log file created\n";
+    
     log_file_.flush();
 
     current_lines_ = 0;

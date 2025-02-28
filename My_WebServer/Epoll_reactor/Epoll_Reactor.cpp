@@ -16,7 +16,7 @@ EpollReactor::~EpollReactor()
 {
     if (epoll_fd_ >= 0)
     {
-        std::cerr << "Closing epoll instance fd=" << epoll_fd_ << "\n";
+        std::cout << "Closing epoll instance fd=" << epoll_fd_ << std::endl;
         close(epoll_fd_);
     }
 }
@@ -27,12 +27,12 @@ void EpollReactor::add_fd(int fd, uint32_t events, EventCallback cb)
     ev.events = events;
     ev.data.fd = fd;
 
-    callbacks_.emplace(fd, std::move(cb));
+    callbacks_.emplace(fd, std::move(cb)); // 将fd和回调函数cb加入callbacks_
 
     if (epoll_ctl(epoll_fd_, EPOLL_CTL_ADD, fd, &ev) == -1)
     {
         Logger::get_instance().log(Logger::ERROR, "epoll_ctl add failed for fd=" + std::to_string(fd) + ": " + std::to_string(errno));
-        throw std::system_error(errno, std::generic_category(), "epoll_ctl add");
+        // throw std::system_error(errno, std::generic_category(), "epoll_ctl add");
     }
 }
 
@@ -68,7 +68,7 @@ void EpollReactor::remove_fd(int fd)
 
     if (epoll_ctl(epoll_fd_, EPOLL_CTL_DEL, fd, nullptr) == -1)
     {
-        if (errno == EBADF)
+        if (errno == EBADF) // 不是一个有效的文件描述符
         {
             std::cerr << "CRITICAL: Epoll instance(" << epoll_fd_
                       << ") or FD=" << fd << " is broken\n";
@@ -81,7 +81,7 @@ void EpollReactor::remove_fd(int fd)
 
         throw std::system_error(errno, std::generic_category(), "epoll_ctl del");
     }
-    callbacks_.erase(fd);
+    callbacks_.erase(fd); // 从callbacks_中删除fd
 }
 
 void EpollReactor::run(int max_events, int timeout_ms)
@@ -107,6 +107,7 @@ void EpollReactor::run(int max_events, int timeout_ms)
     }
 }
 
+// 工厂函数
 std::shared_ptr<TcpConnection> TcpConnection::create(int fd, EpollReactor &reactor)
 {
     return std::shared_ptr<TcpConnection>(new TcpConnection(fd, reactor));
@@ -135,7 +136,7 @@ void TcpConnection::start()
 
 void TcpConnection::set_read_callback(ReadCallback cb)
 {
-    read_cb_ = std::move(cb);
+    read_cb_ = std::move(cb);   // 设置读回调函数
 }
 
 void TcpConnection::send(const std::string &data)

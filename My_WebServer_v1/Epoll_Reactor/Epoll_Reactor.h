@@ -21,7 +21,7 @@ class ProcessMaster;
 class EpollReactor
 {
 public:
-    using EventCallback = std::function<void(uint32_t events)>; // 事件回调函数
+    using EventCallback = std::function<void(uint32_t events)>; // 事件回调函数别名
 
     EpollReactor();
     ~EpollReactor();
@@ -29,14 +29,14 @@ public:
     EpollReactor(const EpollReactor &) = delete;
     EpollReactor &operator=(const EpollReactor &) = delete;
 
-    void add_fd(int fd, uint32_t events, EventCallback cb);
-    void modify_fd(int fd, uint32_t events);
-    void remove_fd(int fd);
-    void run(int max_events = 4096, int timeout_ms = -1);
+    void add_fd(int fd, uint32_t events, EventCallback cb); // 添加fd到epoll监听
+    void modify_fd(int fd, uint32_t events);                // 修改fd的监听事件
+    void remove_fd(int fd);                                 // 移除fd
+    void run(int max_events = 4096, int timeout_ms = -1);   // 开始事件循环
     void stop(); // 停止事件循环
 
 private:
-    std::unordered_map<int, EventCallback> callbacks_;
+    std::unordered_map<int, EventCallback> callbacks_;  // 事件回调存储容器
     int epoll_fd_ = -1;
     std::atomic<bool> running_{true}; // 控制事件循环
 };
@@ -70,8 +70,10 @@ private:
 
     int fd_ = -1;
     EpollReactor &reactor_;
+
     std::string input_buffer_;  // 输入缓冲区
     std::string output_buffer_; // 输出缓冲区
+
     bool writing_ = false;
     bool keep_alive_ = false;
     ReadCallback read_cb_;
@@ -91,7 +93,7 @@ public:
     void set_new_connection_callback(NewConnectionCallback cb);
 
 private:
-    void handle_accept();
+    void handle_accept();   // 处理新连接
 
     EpollReactor &reactor_;
     int listen_fd_ = -1;

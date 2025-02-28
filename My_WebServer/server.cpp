@@ -6,10 +6,10 @@ int main()
 {
     try
     {
-        Logger::get_instance().init("logging", 1000);
-        Logger::get_instance().log(Logger::INFO, "Server started successfully"); // test
+        Logger::get_instance().init("logging", 1000); // 初始化日志系统
+        Logger::get_instance().log(Logger::INFO, "Server started successfully");
 
-        EpollReactor reactor;
+        EpollReactor reactor; // 定义reactor对象
         TcpAcceptor acceptor(reactor, 8080);
 
         acceptor.set_new_connection_callback([&reactor](int fd)

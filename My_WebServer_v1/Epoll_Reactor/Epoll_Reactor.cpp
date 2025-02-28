@@ -127,7 +127,7 @@ void EpollReactor::stop()
     }
 }
 
-// TCP连接处理器
+// TCP连接处理，工厂函数
 std::shared_ptr<TcpConnection> TcpConnection::create(int fd, EpollReactor &reactor)
 {
     return std::shared_ptr<TcpConnection>(new TcpConnection(fd, reactor));
@@ -143,7 +143,7 @@ TcpConnection::~TcpConnection()
 {
     if (fd_ >= 0)
     {
-        shutdown(fd_, SHUT_RDWR);
+        shutdown(fd_, SHUT_RDWR); // 关闭读写端
         close(fd_);
     }
 }
@@ -159,7 +159,7 @@ void TcpConnection::start()
 
 void TcpConnection::set_read_callback(ReadCallback cb)
 {
-    read_cb_ = std::move(cb);
+    read_cb_ = std::move(cb); // 设置读回调函数
 }
 
 void TcpConnection::send(const std::string &data)
@@ -219,7 +219,7 @@ void TcpConnection::do_write()
 
     writing_ = true; // 标记写入状态，防止重入
 
-    // 边缘触发模式必须尝试完全写入
+    // 边缘触发模式下，循环写入数据
     while (!output_buffer_.empty())
     {
         ssize_t n = ::write(fd_, output_buffer_.data(), output_buffer_.size());
@@ -251,7 +251,7 @@ void TcpConnection::do_write()
         // 数据已全部发送，停止监听写事件
         reactor_.modify_fd(fd_, EPOLLIN | EPOLLET);
 
-        // 非keep-alive连接需要立即关闭
+        // 非keep-alive连接，立即关闭
         if (!keep_alive_)
         {
             handle_close();
